@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>School Election Voting</title>
+    <style>
+        body { font-family: Arial; background:#f2f2f2; text-align:center; padding:30px; }
+        .box { background:white; width:550px; margin:auto; padding:25px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,.15); }
+        .candidate { display:flex; align-items:center; gap:15px; margin:12px 0; padding:10px; border-radius:10px; background:#f9f9f9; }
+        .candidate img { width:70px; height:70px; border-radius:8px; object-fit:cover; }
+        button { margin-top:20px; padding:10px 18px; background:#4CAF50; color:white; border:none; border-radius:6px; cursor:pointer; }
+        button:hover { background:#45a049; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2 id="positionTitle"></h2>
+    <div id="candidates"></div>
+    <button onclick="nextVote()">Next</button>
+</div>
+
+<script>
+
+// ONE array for everything
+const election = [
+    {
+        position: "President",
+        candidates: [
+            {name:"Alice", img:"https://via.placeholder.com/70"},
+            {name:"John", img:"https://via.placeholder.com/70"},
+            {name:"Mark", img:"https://via.placeholder.com/70"}
+        ]
+    },
+    {
+        position: "Secretary",
+        candidates: [
+            {name:"Sarah", img:"https://via.placeholder.com/70"},
+            {name:"Emma", img:"https://via.placeholder.com/70"},
+            {name:"Lily", img:"https://via.placeholder.com/70"}
+        ]
+    },
+    {
+        position: "Treasurer",
+        candidates: [
+            {name:"David", img:"https://via.placeholder.com/70"},
+            {name:"Chris", img:"https://via.placeholder.com/70"},
+            {name:"Ryan", img:"https://via.placeholder.com/70"}
+        ]
+    }
+];
+
+// Auto-create votes array
+let votes = election.map(pos => new Array(pos.candidates.length).fill(0));
+let current = 0;
+
+function loadPosition() {
+    let pos = election[current];
+    document.getElementById("positionTitle").innerText = "Vote for " + pos.position;
+
+    let html = pos.candidates.map((c, i) => `
+        <div class="candidate">
+            <input type="radio" name="candidate" value="${i}">
+            <img src="${c.img}">
+            <strong>${c.name}</strong>
+        </div>
+    `).join("");
+
+    document.getElementById("candidates").innerHTML = html;
+}
+
+function nextVote() {
+    let selected = document.querySelector('input[name="candidate"]:checked');
+    if (!selected) return alert("Please select a candidate!");
+
+    votes[current][selected.value]++;
+    current++;
+
+    current < election.length ? loadPosition() : showResults();
+}
+
+function showResults() {
+    let box = document.querySelector(".box");
+    box.innerHTML = "<h2>Election Results</h2>";
+
+    election.forEach((pos, i) => {
+        box.innerHTML += `<h3>${pos.position}</h3>`;
+        pos.candidates.forEach((c, j) => {
+            box.innerHTML += `${c.name}: ${votes[i][j]} votes<br>`;
+        });
+    });
+}
+
+loadPosition();
+
+</script>
+</body>
+</html>

@@ -3,174 +3,95 @@
 <head>
     <title>School Election Voting</title>
     <style>
-        body {
-            font-family: Arial;
-            background: #f2f2f2;
-            text-align: center;
-            padding: 30px;
-        }
-
-        .box {
-            background: white;
-            width: 600px;
-            margin: auto;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }
-
-        h3 {
-            margin-top: 25px;
-        }
-
-        .candidate {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin: 12px 0;
-            padding: 10px;
-            border-radius: 10px;
-            transition: 0.3s;
-        }
-
-        .candidate:hover {
-            background: #f0f8ff;
-        }
-
-        .candidate img {
-            width: 200px;   /* BIGGER IMAGE */
-            height: 200px;  /* BIGGER IMAGE */
-            border-radius: 10px;
-            object-fit: cover;
-        }
-
-        .candidate input {
-            transform: scale(1.3);
-        }
-
-        button {
-            margin-top: 20px;
-            padding: 10px 18px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        button:hover {
-            background: #45a049;
-        }
-
-        .results {
-            margin-top: 25px;
-            text-align: left;
-        }
+        body { font-family: Arial; background:#f2f2f2; text-align:center; padding:30px; }
+        .box { background:white; width:550px; margin:auto; padding:25px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,.15); }
+        .candidate { display:flex; align-items:center; gap:15px; margin:12px 0; padding:10px; border-radius:10px; background:#f9f9f9; }
+        .candidate img { width:70px; height:70px; border-radius:8px; object-fit:cover; }
+        button { margin-top:20px; padding:10px 18px; background:#4CAF50; color:white; border:none; border-radius:6px; cursor:pointer; }
+        button:hover { background:#45a049; }
     </style>
 </head>
 <body>
 
 <div class="box">
-    <h2>🗳️ School Election Voting</h2>
-
-    <h3>President</h3>
-    <div id="president"></div>
-
-    <h3>Secretary</h3>
-    <div id="secretary"></div>
-
-    <h3>Treasurer</h3>
-    <div id="treasurer"></div>
-
-    <button onclick="submitVote()">Submit Vote</button>
-
-    <div class="results" id="results"></div>
+    <h2 id="positionTitle"></h2>
+    <div id="candidates"></div>
+    <button onclick="nextVote()">Next</button>
 </div>
 
 <script>
-    // Candidates with images
-    let presidentCandidates = [
-        {name: "Alice", img: "data:application/octet-stream;base64,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"},
-        {name: "John", img: "https://via.placeholder.com/100"},
-        {name: "Mark", img: "https://via.placeholder.com/100"}
-    ];
 
-    let secretaryCandidates = [
-        {name: "Sarah", img: "https://via.placeholder.com/100"},
-        {name: "Emma", img: "https://via.placeholder.com/100"},
-        {name: "Lily", img: "https://via.placeholder.com/100"}
-    ];
-
-    let treasurerCandidates = [
-        {name: "David", img: "https://via.placeholder.com/100"},
-        {name: "Chris", img: "https://via.placeholder.com/100"},
-        {name: "Ryan", img: "https://via.placeholder.com/100"}
-    ];
-
-    let presidentVotes = new Array(presidentCandidates.length).fill(0);
-    let secretaryVotes = new Array(secretaryCandidates.length).fill(0);
-    let treasurerVotes = new Array(treasurerCandidates.length).fill(0);
-
-    function loadCandidates(positionId, candidates, groupName) {
-        let container = document.getElementById(positionId);
-        container.innerHTML = "";
-
-        for (let i = 0; i < candidates.length; i++) {
-            container.innerHTML += `
-                <div class="candidate">
-                    <input type="radio" name="${groupName}" value="${i}">
-                    <img src="${candidates[i].img}">
-                    <strong>${candidates[i].name}</strong>
-                </div>
-            `;
-        }
+// ONE array for everything
+const election = [
+    {
+        position: "President",
+        candidates: [
+            {name:"Alice", img:"https://via.placeholder.com/70"},
+            {name:"John", img:"https://via.placeholder.com/70"},
+            {name:"Mark", img:"https://via.placeholder.com/70"}
+        ]
+    },
+    {
+        position: "Secretary",
+        candidates: [
+            {name:"Sarah", img:"https://via.placeholder.com/70"},
+            {name:"Emma", img:"https://via.placeholder.com/70"},
+            {name:"Lily", img:"https://via.placeholder.com/70"}
+        ]
+    },
+    {
+        position: "Treasurer",
+        candidates: [
+            {name:"David", img:"https://via.placeholder.com/70"},
+            {name:"Chris", img:"https://via.placeholder.com/70"},
+            {name:"Ryan", img:"https://via.placeholder.com/70"}
+        ]
     }
+];
 
-    loadCandidates("president", presidentCandidates, "president");
-    loadCandidates("secretary", secretaryCandidates, "secretary");
-    loadCandidates("treasurer", treasurerCandidates, "treasurer");
+// Auto-create votes array
+let votes = election.map(pos => new Array(pos.candidates.length).fill(0));
+let current = 0;
 
-    function submitVote() {
-        let p = document.querySelector('input[name="president"]:checked');
-        let s = document.querySelector('input[name="secretary"]:checked');
-        let t = document.querySelector('input[name="treasurer"]:checked');
+function loadPosition() {
+    let pos = election[current];
+    document.getElementById("positionTitle").innerText = "Vote for " + pos.position;
 
-        if (!p || !s || !t) {
-            alert("Please vote for all positions!");
-            return;
-        }
+    let html = pos.candidates.map((c, i) => `
+        <div class="candidate">
+            <input type="radio" name="candidate" value="${i}">
+            <img src="${c.img}">
+            <strong>${c.name}</strong>
+        </div>
+    `).join("");
 
-        presidentVotes[p.value]++;
-        secretaryVotes[s.value]++;
-        treasurerVotes[t.value]++;
+    document.getElementById("candidates").innerHTML = html;
+}
 
-        displayResults();
-        alert("Vote submitted successfully!");
-    }
+function nextVote() {
+    let selected = document.querySelector('input[name="candidate"]:checked');
+    if (!selected) return alert("Please select a candidate!");
 
-    function displayResults() {
-        let results = document.getElementById("results");
-        results.innerHTML = "<h3>Results:</h3>";
+    votes[current][selected.value]++;
+    current++;
 
-        results.innerHTML += "<strong>President:</strong><br>";
-        presidentCandidates.forEach((c, i) => {
-            results.innerHTML += c.name + ": " + presidentVotes[i] + " votes<br>";
+    current < election.length ? loadPosition() : showResults();
+}
+
+function showResults() {
+    let box = document.querySelector(".box");
+    box.innerHTML = "<h2>Election Results</h2>";
+
+    election.forEach((pos, i) => {
+        box.innerHTML += `<h3>${pos.position}</h3>`;
+        pos.candidates.forEach((c, j) => {
+            box.innerHTML += `${c.name}: ${votes[i][j]} votes<br>`;
         });
+    });
+}
 
-        results.innerHTML += "<br><strong>Secretary:</strong><br>";
-        secretaryCandidates.forEach((c, i) => {
-            results.innerHTML += c.name + ": " + secretaryVotes[i] + " votes<br>";
-        });
+loadPosition();
 
-        results.innerHTML += "<br><strong>Treasurer:</strong><br>";
-        treasurerCandidates.forEach((c, i) => {
-            results.innerHTML += c.name + ": " + treasurerVotes[i] + " votes<br>";
-        });
-    }
-
-    displayResults();
 </script>
-
 </body>
 </html>

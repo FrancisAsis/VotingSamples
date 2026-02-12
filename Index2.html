@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Heroes Voting System</title>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(to right, #74ebd5, #ACB6E5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+    }
+
+    .box {
+        background: #fff;
+        width: 700px;
+        max-width: 95%;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        text-align: center;
+    }
+
+    h2 {
+        margin-bottom: 25px;
+        color: #333;
+    }
+
+    #candidates {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .candidate {
+        background: #f9f9f9;
+        border-radius: 15px;
+        padding: 15px;
+        width: 180px;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s, border 0.2s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border: 2px solid transparent; /* default border */
+    }
+    
+    .candidate:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    
+    /* Selected candidate indicator */
+    .candidate.selected {
+        border: 3px solid #4CAF50;
+    }
+
+    .candidate img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin-bottom: 10px;
+    }
+
+    .candidate strong {
+        margin-top: 5px;
+        font-size: 16px;
+        color: #333;
+        text-align: center;
+    }
+
+    button {
+        margin-top: 30px;
+        padding: 12px 25px;
+        font-size: 16px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    button:hover {
+        background: #45a049;
+    }
+
+</style>
+</head>
+<body>
+
+<div class="box">
+    <h2 id="positionTitle"></h2>
+    <div id="candidates"></div>
+    <button onclick="nextVote()">Next</button>
+</div>
+
+<script>
+const superHeros = [
+    {
+        Heros: "Who is the Most Powerful Superhero?",
+        candidates: [
+            {name: "superman", img: "superman.png"},
+            {name: "batman", img: "batman.png"},
+            {name: "Thor", img: "thor.png"}
+        ]
+            
+    },
+    {
+        Heros: "Who Has the Coolest Superpowers?",
+        candidates: [
+            {name:"Doctor Strange", img:"DoctorStrange.png"},
+            {name:"Spider-Man", img:"spiderman.png"},
+            {name:"Scarlet Witch", img:"scarletwich.png"}
+        ]
+    },
+    {
+        Heros: "Who Is the Fastest Superhero?",
+        candidates: [
+            {name:"Flash", img:"flash.png"},
+            {name:"Quicksilver", img:"quicksilver.png"},
+            {name:"Superman", img:"superman.png"}
+        ]   
+    }
+];
+
+let votes = superHeros.map(pos => new Array(pos.candidates.length).fill(0));
+let current = 0;
+
+function loadPosition() {
+    let pos = superHeros[current];
+    document.getElementById("positionTitle").innerText = pos.Heros;
+
+    let html = pos.candidates.map((c, i) => `
+        <div class="candidate">
+            <input type="radio" name="candidate" value="${i}" style="display:none">
+            <img src="${c.img}">
+            <strong>${c.name}</strong>
+        </div>
+    `).join("");
+
+    document.getElementById("candidates").innerHTML = html;
+
+    // Make the whole card clickable
+    document.querySelectorAll(".candidate").forEach((card, i) => {
+        card.addEventListener("click", () => {
+            // Remove 'selected' from all cards
+            document.querySelectorAll(".candidate").forEach(c => c.classList.remove("selected"));
+    
+            // Add 'selected' to clicked card
+            card.classList.add("selected");
+    
+            // Mark the radio input as checked
+            document.querySelector(`input[name="candidate"][value="${i}"]`).checked = true;
+        });
+    });
+}
+
+function nextVote() {
+    let selected = document.querySelector('input[name="candidate"]:checked');
+    if (!selected) return alert("Please select a candidate!");
+
+    votes[current][selected.value]++;
+    current++;
+    current < superHeros.length ? loadPosition() : showResults();
+}
+
+function showResults() {
+    let box = document.querySelector(".box");
+    box.innerHTML = "<h2>Election Results</h2>";
+
+    superHeros.forEach((pos, i) => {
+        box.innerHTML += `<h3>${pos.Heros}</h3>`;
+        pos.candidates.forEach((c, j) => {
+            box.innerHTML += `${c.name}: ${votes[i][j]} votes<br>`;
+        });
+    });
+}
+
+loadPosition();
+</script>
+
+</body>
+</html>

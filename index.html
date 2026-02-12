@@ -164,7 +164,7 @@ function loadPosition() {
 
 function nextVote() {
     let selected = document.querySelector('input[name="candidate"]:checked');
-    if (!selected) return alert("Please select a candidate!");
+    if (!selected) return alert("Please select your superhero!");
 
     votes[current][selected.value]++;
     current++;
